@@ -226,12 +226,12 @@ const excluirTipoCategoria = async function(id){
     }
 }
 
-//Função para excluir os generos relacionados com o filme
-const excluirGenerosIdFilme = async function(idFilme){
+//Função para excluir os tipos relacionados com o categoria
+const excluirTipoIdCategoria = async function(idCategoria){
     let message = JSON.parse(JSON.stringify(config_message))
     try{
-        //Chamar a função do DAO para excluir o genero
-        let result = await generoFilmeDAO.deleteGenerosByIdFIlme(idFilme)
+        //Chamar a função do DAO para excluir o tipo
+        let result = await tipoCategoriaDAO.deleteTiposByIdCategoria(idCategoria)
 
         if(result){
             message.DEFAULT_MESSAGE.status = message.SUCCESS_DELETED_ITEM.status
@@ -267,12 +267,12 @@ const validarDadosTipoCategoria = async function(tipoCategoria){
 }
 
 module.exports = {
-    inserirNovoGeneroFilme,
-    atualizarGeneroFilme,
+    inserirNovoTipoCategoria,
+    atualizarTipoCategoria,
     listarGeneroFilme,
-    buscarGeneroFilme,
-    buscarFilmeIdGenero,
-    buscarGeneroIdFilme,
-    excluirGeneroFilme,
-    excluirGenerosIdFilme
+    buscarTipoCategoria,
+    buscarCategoriaIdTipo,
+    buscarTipoIdCategoria,
+    excluirTipoCategoria,
+    excluirTipoIdCategoria
 }

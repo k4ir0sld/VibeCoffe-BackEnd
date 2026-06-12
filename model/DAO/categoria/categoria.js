@@ -62,6 +62,7 @@ async function updateCategoria(categoria) {
         }else{return false}
         
     } catch (error) {
+        console.log(error)
         return false
     }
 

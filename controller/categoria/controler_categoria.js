@@ -11,6 +11,9 @@ const configMessage = require("../modulo/configMessages.js")
 // Import do DAO  responsavel por fazer o o crud no banco de dados
 const CategoriaDAO = require("../../model/DAO/categoria/categoria.js")
 
+//Import de arquivos de Controller
+const controller_tipo_categoria = require('./controller_tipo_categora.js')
+
 /*****************************************************************************************
  * Inserir nova categoria
  *****************************************************************************************/
@@ -33,8 +36,20 @@ async function inserirNovaCategoria(categoria, contentType) {
                 let result = await CategoriaDAO.insertCategoria(categoria)
     
                 if (result) {
-    
                     categoria.id = result// coloca o id ao cargo apos ele ser inserido no banco 
+
+                    for(tipo of categoria.tipo){
+
+                        let categoriaTipo = {   "id_categoria": categoria.id,
+                                                "id_tipo": tipo.id
+                                            }
+
+                        let resultInsertTipo = await controller_tipo_categoria.inserirNovoTipoCategoria(categoriaTipo)    
+                        
+                        if(!resultInsertTipo.status){
+                            return message.SUCCESS_CREATED_ITEM_WARNING
+                        }
+                    }
                     message.DEFAULT_MESSAGE.status      = message.SUCCESS_CREATED_ITEM.status
                     message.DEFAULT_MESSAGE.status_code = message.SUCCESS_CREATED_ITEM.status_code
                     message.DEFAULT_MESSAGE.message     = message.SUCCESS_CREATED_ITEM.message
@@ -73,9 +88,16 @@ async function buscarCategoria(id) {
             }else{
                 
                 let result = await CategoriaDAO.selectByIdCategoria(id)
-    
+
                 if (result) {
                     if (result.length>0) {
+                        for(categoria of result){
+        
+                            let resultTipo = await controller_tipo_categoria.buscarTipoIdCategoria(categoria.id)
+                            if(resultTipo.status){
+                                categoria.tipo = resultTipo.response.tipo_categoria
+                            }
+                        }
                         message.DEFAULT_MESSAGE.status                  = message.SUCCESS_RESPONSE.status
                         message.DEFAULT_MESSAGE.status_code             = message.SUCCESS_RESPONSE.status_code
                         message.DEFAULT_MESSAGE.response.categoria      = result
@@ -113,6 +135,13 @@ async function listarCategoria() {
         if (result) {
             // valida se a array de retorno do DAO tem algo dentro
             if (result.length>0) {
+
+                for(categoria of result){
+                    let resultTipo = await controller_tipo_categoria.buscarTipoIdCategoria(categoria.id)
+                    if(resultTipo.status){
+                        categoria.tipo = resultTipo.response.tipo_categoria
+                    }
+                }
                     
                 message.DEFAULT_MESSAGE.status              = message.SUCCESS_RESPONSE.status
                 message.DEFAULT_MESSAGE.status_code         = message.SUCCESS_RESPONSE.status_code
@@ -159,6 +188,20 @@ async function atualizarCategoria(categoria, id, contentType) {
                         let result = await CategoriaDAO.updateCategoria(categoria)
     
                         if (result) {
+                            let resultDeleteTipo = await controller_tipo_categoria.excluirTipoIdCategoria(categoria.id)
+                            if(resultDeleteTipo.status){
+
+                                for(tipo of categoria.tipo){
+                                    let categoriaTipo = {   "id_categoria": categoria.id,
+                                                            "id_tipo": tipo.id
+                                                    }
+                                let resultInsertTipo = await controller_tipo_categoria.inserirNovoTipoCategoria(categoriaTipo)
+
+                                if(!resultInsertTipo.status){
+                                    return message.SUCCESS_CREATED_ITEM_WARNING
+                                }
+                                }
+                            }
                             message.DEFAULT_MESSAGE.status      = message.SUCCESS_UPDATE_ITEM.status
                             message.DEFAULT_MESSAGE.status_code = message.SUCCESS_UPDATE_ITEM.status_code
                             message.DEFAULT_MESSAGE.message     = message.SUCCESS_UPDATE_ITEM.message
