@@ -230,21 +230,21 @@ const excluirTipoCategoria = async function(id){
 const excluirTipoIdCategoria = async function(idCategoria){
     let message = JSON.parse(JSON.stringify(config_message))
     try{
-        //Chamar a função do DAO para excluir o tipo
         let result = await tipoCategoriaDAO.deleteTiposByIdCategoria(idCategoria)
 
+        // true = deletou ou não tinha nada pra deletar, ambos são sucesso
         if(result){
-            message.DEFAULT_MESSAGE.status = message.SUCCESS_DELETED_ITEM.status
-            message.DEFAULT_MESSAGE.status_code = message.SUCCESS_DELETED_ITEM.status_code
-            message.DEFAULT_MESSAGE.message = message.SUCCESS_DELETED_ITEM.message
+            message.DEFAULT_MESSAGE.status      = message.SUCCESS_DELETE_ITEM.status
+            message.DEFAULT_MESSAGE.status_code = message.SUCCESS_DELETE_ITEM.status_code
+            message.DEFAULT_MESSAGE.message     = message.SUCCESS_DELETE_ITEM.message
             
-            return message.DEFAULT_MESSAGE //200
+            return message.DEFAULT_MESSAGE
         }else{
-            return message.ERROR_INTERNAL_SERVER_MODEL //500 (Model)
+            return message.ERROR_INTERNAL_SERVER_MODEL
         }
 
     } catch (error) {
-        return message.ERROR_INTERNAL_SERVER_CONTROLLER //500 (Controller)
+        return message.ERROR_INTERNAL_SERVER_CONTROLLER
     }
 }
 

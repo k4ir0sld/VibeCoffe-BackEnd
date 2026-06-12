@@ -172,17 +172,17 @@ const deleteTipoCategoria = async function(id){
 //Função para excluir os Tipos filtrando pelo ID da categoria
 //Essa função será utilizada no Update da categoria, pois precisa apagar todos os tipos
 //relacionados com a categoria para inserir as novas relações
+// model/DAO/tipo_categoria/tipo_categoria.js
+
 const deleteTiposByIdCategoria = async function(idCategoria) {
     try {
         let sql = `delete from tbl_tipo_categoria where id_categoria=${idCategoria}`
+        await knexConex.raw(sql)
 
-        let result = await knexConex.raw(sql)
+        return true // se não jogou exception, funcionou
 
-        if(result)
-            return true
-        else
-            return false
     } catch (error) {
+        console.log(error)
         return false
     }
 }
